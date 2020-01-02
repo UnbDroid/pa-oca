@@ -1,0 +1,167 @@
+Lógica da primeira parte do desafio:
+
+1) Filtragem dos sensores LDR [int filterLDR(char var_side[])] {
+
+  Opções: média simples, média ponderada, média ordenada
+  Pegar um número X de leituras dos LDRs e aplicar a média desejada
+
+  Como declarar na biblioteca:
+  /* filterLDR
+  Descricao: Faz a filtragem dos valores lidos por um sensor LDR
+  Parametros:
+    - var_side: indica qual LDR está sendo filtrado | left = LDR da esquerda
+                                                    | right = LDR da direita
+                                                    | behind = LDR de trás
+  Retorno: Valor filtrado do LDR escolhido
+  */
+}
+
+2) Função que checa se o sensor LDR está vendo preto ou branco [int checkLDR(char var_side[])] {
+
+  Essa função recebe os valores filtrados pela função 'filterLDR' e diz qual cor o ldr está lendo
+
+  Como declarar na biblioteca:
+  /* checkLDR
+  Descricao: Checa qual cor o LDR escolhido está lendo
+  Parametros:
+    - var_side: indica qual LDR está sendo checado | left = LDR da esquerda
+                                                   | right = LDR da direita
+                                                   | behind = LDR de trás
+  Retorno: 1 = branco
+           0 = preto
+  */
+}
+
+3) Função que checa a cor lida pelo sensor de cor [int checkColor(int var_red, int var_green, int var_blue)] {
+
+    Essa função identifica a cor que o sensor de cor está lendo
+
+    Como declarar na biblioteca:
+    /* checkColor
+    Descricao: Checa qual cor o sensor de cor está lendo
+    Parametros:
+      - var_red: valor de vermelho lido pelo sensor
+      - var_green: valor de verde lido pelo sensor
+      - var_blue: valor de azul lido pelo sensor
+    Retorno:0 = preto
+            1 = branco
+            2 = vermelho
+            3 = azul
+            4 = verde
+            5 = amarelo
+
+    */
+}
+
+4) Função que decodifica as cores lidas pelo sensor de cor [int decodColor(int var_color)] {
+
+  Essa função decodifica a encruzilhada da primeira parte do desafio
+
+  Como declarar na biblioteca:
+  /* decodColor
+  Descricao: Decodifica o caminho da encruzilhada de acordo com a cor lida pelo sensor de cor
+  Parametros:
+    - var_color: cor lida pelo sensor de cor | 0 = preto
+                                             | 1 = branco
+                                             | 2 = vermelho
+                                             | 3 = azul
+                                             | 4 = verde
+                                             | 5 = amarelo
+  Retorno:0 = esquerda
+          1 = direita
+          2 = frente
+  */
+
+}
+
+5) Função que segue linha: junção do movimento com a leitura dos sensores [void followLine(int var_left, int var_right, int var_behind, int var_color)] {
+
+  Essa função realiza de fato o segue linha utilizando a função 'checkLDR'
+  Ideias de implementação:
+    Geral:
+    - O sensor de cor deve estar sempre sendo lido, assim como os LDRs
+    - a ideia principal seria que os sensores da frente sempre lessem branco e o sensor de trás lesse preto
+    - caso o ldr da esquerda leia preto: o robô deve girar no sentido anti-horário até que o sensor da esquerda volte a ler branco
+    - caso o ldr da direita leia preto: o robô deve girar no sentido horário até que o sensor da direita volte a ler branco
+    - o ldr de trás deve ler preto e serve como garantia, então em ambos as casos acima, ele precisa também continuar a ver preto
+    GAP:
+    - no caso dos 'gaps' o ldr de trás começará a ler branco, ignorar a leitura de branco por um tempo para ter certeza que está em um 'gap' e não perdido
+    Encruzilhada na primeira parte:
+    - Ao reconhecer uma cor diferente de preto no sensor de cor, realizar a leitura da função 'decodColor' que revela para qual lado o robô deve ir
+    - Quando o robô ler preto com ambos os sensores da frente:
+      1)Se tiver que seguir o caminho da esquerda - girar no sentido anti-horário até que os sensores da frente leiam branco e o de
+      trás leia preto
+      2)Se tiver que seguir o caminho da direita - girar no sentido horário até que os sensores da frente leiam branco e o de
+      trás leia preto
+      3)Se tiver que seguir o caminho da frente, seguir reto normal
+      OBS.: ele lerá novamente novamente preto com ambos os sensores da frente, mas essa segunda vez deve ser ignorada
+
+  Como declarar na biblioteca:
+  /* followLine
+  Descricao: Realiza o segue linha, reconhecendo 'gaps' e encruzilhadas.
+  Parametros:
+    - var_left: leitura do LDR esquerdo
+    - var_right: leitura do LDR direito
+    - var_behind: leitura do LDR de trás
+    - var_color: leitura do sensor de cor
+  Retorno: nenhum retorno
+  */
+
+}
+
+6) Filtragem do sensor ultrassom [int filterUltra(int var_ultra)] {
+  Opções: média simples, média ponderada, média ordenada
+  Pegar um número X de leituras do ultrassom e aplicar a média desejada
+
+  Como declarar na biblioteca:
+  /* filterUltra
+  Descricao: Faz a filtragem dos valores lidos por um sensor ultrassom
+  Parametros:
+    - var_ultra: leitura do sensor ultrassom
+  Retorno: Valor filtrado do ultrassom
+  */
+
+}
+
+7) Função que desvia de obstáculos [int obstacle(int var_ultra)] {
+
+    Função que recebe o valor da função 'filterUltra' e desvia de obstáculos
+
+    Ideias de implementação:
+    Geral:
+      - Parar o segue linha se o valor do ultrassom for menor que um valor X
+      - Girar 90 graus, andar uma distância Y, girar 90 graus, andar a mesma distância Y
+      - Voltar a seguir linha
+
+      Como declarar na biblioteca:
+      /* obstacle
+      Descricao: Desvia de obstáculos.
+      Parametros:
+        - var_ultra: leitura filtrada do sensor ultrassom
+      Retorno:0 = não passou ainda pelo obstáculo
+              1 = passou pelo obstáculo
+      */
+
+}
+
+8) Função para reconhecer a entrada para a segunda fase [void entry(int var_ultra, int var_allow)] {
+
+  Função que recebe o valor da função 'filterUltra' e reconhece a entrada para a segunda fase
+
+  Ideias de implementação:
+  Geral:
+    - Após o desvio de obstáculo, o robô anda uma distância X, gira 90 graus e continua o ciclo
+    - Se a leitura do ultrassom for maior que Y, o robô anda uma pequena distância Z, gira 90 graus e anda uma distância W
+
+    Como declarar na biblioteca:
+    /* entry
+    Descricao: Acha a entrada para a próxima etapa.
+    Parametros:
+      - var_ultra: leitura filtrada do sensor ultrassom
+      - var_allow: permite que a função comece somente após ter passado pelo obstáculo | 0 = função não começa
+                                                                                       | 1 = função começa
+
+    Retorno: nenhum retorno
+    */
+
+}
