@@ -1,0 +1,11 @@
+1x AcopladorCor
+1x base	- prioridade
+1x paredeFrontal - prioridade
+2x paredeLateral - prioridade
+6x paredeModuloLDR1
+3x paredeModuloLDR2
+3x paredeModuloLDR3
+2x paredeModuloLDRBase
+1x ParedeModuloLDRBaseEspelhado
+1x teto - prioridade
+3x Trava
