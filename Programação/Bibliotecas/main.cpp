@@ -3,6 +3,8 @@
 #include <Arduino.h>
 #include <MotorDC.h>
 #include <Ldr.h>
+#include <Ultrasonic.h>
+#include <Ultrassom.h>
 
 //Criando os objetos dos motores.
 MotorDC motorLeft (12, 11, 10);
@@ -10,6 +12,9 @@ MotorDC motorRight (7, 6, 5);
 
 //Criando os objetos dos LDR's.
 Ldr ldrLeft (A0, 600);
+
+//Criando objetos de teste para o ultrassom
+Ultrassom usa (1, 2); 
 
 void setup() {
 
@@ -21,7 +26,7 @@ void setup() {
 
 void loop() {
 
-  
+  /*
   
   //Motor anda para frente por 1 segundo.
   motorLeft.fwd(40);
@@ -51,6 +56,10 @@ void loop() {
   }
 
   // Acima de 600 = preto! 
+*/
+
+//Teste o ultrassom com o Led Builtin
+usa.acende();
 
 
 }
