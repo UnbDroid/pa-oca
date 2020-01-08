@@ -19,27 +19,41 @@ public:
 
 class Ultrassom
 {
-    
+
 public:
 
-    //Construtor e Destrutor da classe Ultrassom.
+  /* Ultrassom
+    Descricao: Construtor da Classe.
+    Parâmetros:
+      - pinEcho: Pino digital em que o ultrassom recebe a onda.
+      - pinTrig: Pino digital em que o ultrassom manda a onda.
+  */
+
     Ultrassom( int pinEcho, int pinTrig);
+
+    //Destrutor da Classe Ultrassom
     ~Ultrassom();
-    //Função de filtragem das leituras do ultrassom.
+
+    /* Filter
+      Descricao: Função de filtragem das leituras do ultrassom.
+      Parâmetros:
+        - count: Quantidade de leituras.
+    */
+
     int filter (int count);
+
     //Função utilizada para testar no Led Builtin.
+
     void acende();
-    
+
 
 private:
-    //Atributos da classe ultrassom
+
     int pinEcho;
     int pinTrig;
 
-    //
     Ultrasonic *ultra;
 
-    //Usa-se para fazer teste com o Led Builtin
     Teste *teste;
 
 };
