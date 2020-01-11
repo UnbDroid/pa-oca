@@ -10,10 +10,11 @@ class MotorDC
       Parâmetros:
         - pinA: Pino digital de indicação de direção.
         - pinB: Pino digital de indicação de direção.
-        - pinPwn: Pino analógico de potência mandada para o motor (0 a 255)
+        - pinPwn: Pino analógico de potência mandada para o motor (0 a 255).
+        - pinEnc: Pino digital interrupt de sinal do encoder.
     */
 
-    MotorDC(int pinA, int pinB, int pinPwn);
+    MotorDC(int pinA, int pinB, int pinPwn, int pinEnc);
 
     //Destrutor da Classe MotorDC
 
@@ -35,17 +36,27 @@ class MotorDC
 
     void rev(int pot);
 
-    /* rev
+    /* stop
       Descricao: Desliga o motor.
     */
 
     void stop();
+
+    /* encSignal
+      Descricao: Ao detectar um sinal do encoder, atualiza o contador do mesmo, de acordo com o sentido de rotação do motor.
+    */
+
+    void encSignal();
+
 
     private:
 
     int pinA;
     int pinB;
     int pinPwm;
+    int pinEnc;
+    int dir;
+    int encCount;
 
 
 };
