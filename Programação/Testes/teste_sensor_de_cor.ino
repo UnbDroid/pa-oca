@@ -1,3 +1,4 @@
+#include <Arduino.h>
 //Programa: Sensor TCS3200 e led RGB
 //Autor: FILIPEFLOP
  
