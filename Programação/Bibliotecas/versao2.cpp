@@ -20,7 +20,7 @@ void followLine() {
 	while(esquerdo == 1 && direito == 1) {
 		if(atras == 0 && flag == 0) {
 			moveAll(40);
-			flag == 1;
+			flag = 1;
 		}
 		else if (atras == 1) {
 			flag = 0;
@@ -96,15 +96,20 @@ bool obstacle() {
 		FowardCm(5);
 	}
 	else if(frente > 5 && lado > 10 && searchWall == true) {
-		contador = 0;
+		int countLeft = 0;
+		int c = DIAMETER*PI;
+	  int andado = 0;
+
 		while(lado > 10) {
-			//contador = contagemEnconder
-			//calcular o tanto que andou
+			countLeft = motorLeft.getencCount(); //contagem do enconder																		//calcular o tanto que andou
 		}
+
+		andado = (countLeft*c)/GIRO;
+
 		stopAll();
-		RevCm(); //o tanto que andou
+		RevCm(andado); //andar de ré o tanto que andou
 		turnDegrees(40,90,HORARIO);
-		FowardCm(); //andar alguns cms para achar a linha e seguir o segue linha
+		FowardCm(10); //andar alguns cms para achar a linha e seguir o segue linha
 		return true;	// ja passou para a segunda parte do desafio
 	}
 	else if (lado < 10) {

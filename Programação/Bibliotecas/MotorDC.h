@@ -48,6 +48,14 @@ class MotorDC
 
     void encSignal();
 
+    /* getencCount
+      Descricao: Devolve o valor do contador do motor.
+      Retorno:
+        - Número inteiro que responde a contagem do encoder
+    */
+
+    int getencCount();
+
 
     private:
 

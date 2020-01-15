@@ -3,6 +3,10 @@
 
 #define HORARIO 0
 #define ANTIHORARIO 1
+#define DIAMETER 5.5 //roda tem 5,5cm de diametro
+#define PI 3.14159265359
+#define GIRO 400 //o enconder conta 400 para dar 1 giro na roda
+#define WDIST 27.6 //distancia entre as duas rodas em cm
 
 /* Move All
   Descricao: Liga os dois motores.
