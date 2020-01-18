@@ -6,7 +6,7 @@ MotorDC::MotorDC(int pinA, int pinB, int pinPwm, int pinEnc){
 
     //Setando os atributos da classe com os valores passado pela função.
     this->pinA = pinA;
-    this->pinB = pinB;
+    this->pinB = pinB; 
     this->pinPwm = pinPwm;
     this->pinEnc = pinEnc;
 
@@ -19,7 +19,7 @@ MotorDC::MotorDC(int pinA, int pinB, int pinPwm, int pinEnc){
     pinMode(pinB, OUTPUT);
     pinMode(pinPwm, OUTPUT);
     pinMode(pinEnc, INPUT);
-
+    
 }
 
 //Função do Destrutor.
@@ -45,14 +45,14 @@ void MotorDC::rev(int pot){
     digitalWrite(pinA, LOW);
     digitalWrite(pinB, HIGH);
     analogWrite(pinPwm, pot);
-
+   
 }
 
 //Função de parada.
 
 void MotorDC::stop(){
 
-    dir = 0
+    dir = 0;
 
     digitalWrite(pinA, LOW);
     digitalWrite(pinB, LOW);
@@ -66,6 +66,6 @@ void MotorDC::encSignal(){
 
 }
 
-int MotorDC::getencCount(){
-  return encCount;
+long unsigned int MotorDC::getCount(){
+    return encCount;
 }

@@ -1,86 +1,107 @@
+#include <Arduino.h>
 #include <Move.h>
 
-void moveAll(int potencia) {
-  motorLeft.fwd(potencia);
-  motorRight.fwd(potencia);
+void moveAll(int potencia, MotorDC *motorLeft, MotorDC *motorRight) {
+  motorLeft->fwd(potencia);
+  motorRight->fwd(potencia+19);
+  delay(50);
+  stopAll(motorLeft,motorRight);
 }
 
-void moveRevAll(int potencia) {
-  motorLeft.rev(potencia);
-  motorRight.rev(potencia);
+void moveRevAll(int potencia, MotorDC *motorLeft, MotorDC *motorRight) {
+  motorLeft->rev(potencia);
+  motorRight->rev(potencia+19);
+  delay(120);
+  stopAll(motorLeft,motorRight);
 }
 
 
-void stopAll() {
-  motorRight.stop();
-  motorLeft.stop();
+void stopAll(MotorDC *motorLeft, MotorDC *motorRight) {
+  motorRight->stop();
+  motorLeft->stop();
 }
 
-void turnClockwise(int potencia) {
-  stopAll();
-  motorLeft.fwd(potencia);
-  motorRight.rev(potencia);
+void turnClockwise(int potencia, MotorDC *motorLeft, MotorDC *motorRight) {
+  stopAll(motorLeft, motorRight);
+  motorLeft->fwd(potencia);
+  motorRight->rev(potencia+40);
+  delay(120);
+  stopAll(motorLeft,motorRight);
 }
 
-void turnAnticlockwise(int potencia) {
-  stopAll();
-  motorRight.fwd(potencia);
-  motorLeft.rev(potencia);
+void turnAnticlockwise(int potencia,  MotorDC *motorLeft, MotorDC *motorRight) {
+  stopAll(motorLeft, motorRight);
+  motorRight->fwd(potencia+16);
+  motorLeft->rev(potencia+25);
+  delay(120);
+  stopAll(motorLeft,motorRight);
 }
 
-void turnDegrees(int potencia, int graus, int direcao) {
-  int c = DIAMETER*PI;
-  int andar = (GIRO*WDIST*graus)/c;
-  int countLeft = 0, countRight = 0;
+void turnDegrees(int potencia, int graus, int direcao, MotorDC *motorLeft, MotorDC *motorRight) {
+  int c = DIAMETER*3.14;
+  int andar = (GIRO*(WDIST*3.14*2)*((float) graus/360))/c;
+  int countLeftInitial = motorLeft->getCount();
+  int countLeftUpdate = motorLeft->getCount();
+  int countRightInitial = motorRight->getCount();
+  int countRightUpdate = motorRight->getCount();
 
   if (direcao == HORARIO) {
-    motorRight.stop();
-    motorLeft.fwd(potencia);
-    while(countLeft!=andar) {
-      countLeft = motorLeft.getencCount();
+    motorRight->stop();
+    motorLeft->fwd(potencia);
+    while((countLeftUpdate - countLeftInitial) < andar) {
+      countLeftUpdate = motorLeft->getCount();
+      Serial.println("Counter L deg");
+      Serial.println(countLeftUpdate);
     }
-    stopAll();
+    stopAll(motorLeft, motorRight);
   }
 
   else if (direcao == ANTIHORARIO) {
-    motorLeft.stop();
-    motorRight.fwd(potencia);
-    while(countRight!=andar) {
-      countRight = motorRight.getencCount();
+    motorLeft->stop();
+    motorRight->fwd(potencia+16);
+    while((countRightUpdate - countRightInitial) < andar) {
+      countRightUpdate = motorRight->getCount();
+      Serial.println("Counter R");
+      Serial.println(countRightUpdate);
     }
-    stopAll();
+    stopAll(motorLeft, motorRight);
   }
   else {
     //error
   }
-  stopAll();
+  stopAll(motorLeft, motorRight);
 }
 
-void FowardCm(int potencia, int distancia) {
+void FowardCm(int potencia, int distancia, MotorDC *motorLeft, MotorDC *motorRight) {
 
+  int countLeftInitial = motorLeft->getCount();
+  int countLeftUpdate = motorLeft->getCount();
+  int c = DIAMETER*PI;
+  int andar = (distancia*GIRO)/c;
+
+  moveAll(potencia, motorLeft, motorRight);
+
+  while((countLeftUpdate - countLeftInitial) < andar) {
+    countLeftUpdate = motorLeft->getCount();
+    Serial.println("Counter L fwd");
+    Serial.println(countLeftUpdate);
+    Serial.println(andar);
+    Serial.println(countLeftInitial);
+  }
+
+  stopAll(motorLeft, motorRight);
+}
+
+void RevCm(int potencia, int distancia, MotorDC *motorLeft, MotorDC *motorRight) {
   int countLeft = 0;
   int c = DIAMETER*PI;
   int andar = (distancia*GIRO)/c;
 
-  moveAll(potencia);
+  moveRevAll(potencia, motorLeft, motorRight);
 
-  while(countLeft!=andar) {
-    countLeft = motorLeft.getencCount();
+  while(countLeft < andar) {
+    countLeft = motorLeft->getCount();
   }
 
-  stopAll();
-}
-
-void RevCm(int potencia, int distancia) {
-  int countLeft = 0;
-  int c = DIAMETER*PI;
-  int andar = (distancia*GIRO)/c;
-
-  moveRevAll(potencia);
-
-  while(countLeft!=andar) {
-    countLeft = motorLeft.getencCount();
-  }
-
-  stopAll();
+  stopAll(motorLeft, motorRight);
 }

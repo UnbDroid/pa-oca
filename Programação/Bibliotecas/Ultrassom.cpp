@@ -14,7 +14,7 @@ Ultrassom::Ultrassom(int pinEcho, int pinTrig)
     this->pinTrig = pinTrig;
 
     //Gravando no atributo de ponteiro ultra o construtor do objeto da método Ultrassonic.
-    this->ultra = new Ultrasonic(pinEcho, pinTrig);
+    this->ultra = new Ultrasonic(pinTrig, pinEcho);
 
     /*Gravando no atributo de ponteiro teste o construtor do objeto da método Teste da qual
     está sendo utilizada para testar com o Led Builtin.*/
@@ -35,10 +35,16 @@ Ultrassom::~Ultrassom()
 int Ultrassom::filter(int count){
 
     int soma = 0;
+    int valor = 0;
 
     //Pegando n números de leituras e salvando em uma variável.
     for (int i = 0; i<=count; i++){
-        soma += ultra-> Ranging(CM);
+        valor = ultra->Ranging(CM);
+        if(valor != 0) {
+            soma += valor;
+        } else {
+            count--;
+        }
     } 
 
     //Calculando a média e a retornando.
