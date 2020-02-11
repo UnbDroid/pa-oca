@@ -22,6 +22,8 @@ void moveAll(int potencia, MotorDC *motorLeft, MotorDC *motorRight);
   Descricao: Desliga os dois motores.
 */
 
+void moveAllpid(int _potencia, MotorDC *motorLeft, MotorDC *motorRight, float *soma, float *error);
+
 void moveRevAll(int potencia, MotorDC *motorLeft, MotorDC *motorRight);
 
 void stopAll(MotorDC *motorLeft, MotorDC *motorRight);

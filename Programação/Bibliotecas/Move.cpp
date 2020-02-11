@@ -1,11 +1,65 @@
 #include <Arduino.h>
 #include <Move.h>
 
+#define kp 0.5
+#define ki 0.001
+float time1 = millis();
+
 void moveAll(int potencia, MotorDC *motorLeft, MotorDC *motorRight) {
   motorLeft->fwd(potencia);
-  motorRight->fwd(potencia+19);
-  delay(50);
+  motorRight->fwd(potencia+6);
+  delay(80);
   stopAll(motorLeft,motorRight);
+}
+
+void moveAllpid(int _potencia, MotorDC *motorLeft, MotorDC *motorRight, float *soma, float *error) {
+  float potLeft;
+  float potRight;
+  float lastError = error[0];
+  float lastT = error[1];
+  float deltaT;
+  float deltaE;
+
+  error[0] = motorLeft->getCount() - motorRight->getCount(); // diferença entre os encoderes sendo o error atual
+  error[1] = millis();
+
+  deltaT = error[1] - lastT;
+  deltaE = error[0] - lastError;
+
+  *soma += error[0]*deltaT; 
+
+  if((*soma)*ki > 20){
+    *soma = 20/ki;
+  }
+  else if((*soma)*ki < -20){
+    *soma = -20/ki;
+  }
+
+  potLeft = _potencia;
+  potRight = _potencia + (error[0]*kp) + (*soma)*ki;
+  
+  if((error[1] - time1) > 3500){
+    motorLeft->fwd(potLeft);
+    motorRight->fwd(potRight);
+  } else {
+    motorLeft->fwd(50);
+    motorRight->fwd(50);
+  }
+
+  //Serial.print("error:");
+  //Serial.println()
+  //Serial.print("potLeft");
+  //Serial.println(potLeft);
+  //Serial.print("potRight");
+  //Serial.println(potRight);
+  //Serial.print("Soma:");
+  //Serial.println((*soma));
+
+  
+
+
+  //delay(80);
+  //stopAll(motorLeft,motorRight);
 }
 
 void moveRevAll(int potencia, MotorDC *motorLeft, MotorDC *motorRight) {
@@ -47,7 +101,7 @@ void turnDegrees(int potencia, int graus, int direcao, MotorDC *motorLeft, Motor
 
   if (direcao == HORARIO) {
     motorRight->stop();
-    motorLeft->fwd(potencia);
+    motorLeft->fwd(potencia+16);
     while((countLeftUpdate - countLeftInitial) < andar) {
       countLeftUpdate = motorLeft->getCount();
       Serial.println("Counter L deg");
@@ -82,11 +136,12 @@ void FowardCm(int potencia, int distancia, MotorDC *motorLeft, MotorDC *motorRig
   moveAll(potencia, motorLeft, motorRight);
 
   while((countLeftUpdate - countLeftInitial) < andar) {
+    moveAll(potencia, motorLeft, motorRight);
     countLeftUpdate = motorLeft->getCount();
-    Serial.println("Counter L fwd");
-    Serial.println(countLeftUpdate);
-    Serial.println(andar);
-    Serial.println(countLeftInitial);
+    //Serial.println("Counter L fwd");
+    //Serial.println(countLeftUpdate);
+    //Serial.println(andar);
+    //Serial.println(countLeftInitial);
   }
 
   stopAll(motorLeft, motorRight);
