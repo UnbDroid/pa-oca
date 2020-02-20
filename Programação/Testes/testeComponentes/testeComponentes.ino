@@ -4,7 +4,7 @@
 //Opcoes disponiveis de define: ALL, SENSORES, SERVO, MOTORES, INFRA, US, COR, BUMPER
 
 
-#define INFRA 
+#define MOTORES 
 
 
 
@@ -24,21 +24,23 @@
 #define USd_e 42
 #define BumperE 38
 #define BumperD 36
-#define CorS0 8
-#define CorS1 9
-#define CorS2 11
-#define CorS3 12
-#define CorOut 12
-#define MeA 51
-#define MeB 49
-#define MePwm 3
-#define MeEnc 19
-#define MeEnable 47
-#define MdA 48
-#define MdB 46
-#define MdPwm 7//fio verde solto
-#define MdEnc 18
-#define MdEnable 50
+#define CorS0 6
+#define CorS1 7
+#define CorS2 9
+#define CorS3 8
+#define CorOut 11
+#define MeA 51 //m1A
+#define MeB 46 //m1B
+#define MePwm 3 //m1pwm
+#define MeEnc 19 
+#define MeEnable 47 //m1En
+#define MdA 48 //m2A
+#define MdB 49 //m2B 
+#define MdPwm 7//fio verde solto, m2pwm
+#define MdEnc 18 
+#define MdEnable 50 //m2En
+
+
 #define serv 5
 
 
