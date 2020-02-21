@@ -18,7 +18,7 @@ MotorDC motorRight (48, 46, 13, 19); //pinos
 void inc (){
 
   motorLeft.encSignal();
-  
+
 }
 
 void incR (){
@@ -34,7 +34,7 @@ Ldr ldrBehind (A4, 600); //Porta e margem leitura - acima de 600 é preto
 
 
 //Criando objetos de teste para o ultrassom
-Ultrassom ultraFront (3, 4); //Ultrassom da parte frontal 
+Ultrassom ultraFront (3, 4); //Ultrassom da parte frontal
 
 /*
 //Criando os objetos do sensor de cor
@@ -54,10 +54,10 @@ void setup() {
 
 void loop() {
 
-  
+
   /*
   //------- Teste do Motores ---------
-  
+
   //Motor anda para frente por 1 segundo.
   motorLeft.fwd(potBase);
   motorRight.fwd(33);
@@ -78,8 +78,8 @@ void loop() {
   motorLeft.stop();
   delay(1000);
   */
- 
-  
+
+
   //------- Teste do LDR's ---------
 
    //int leitura = ldrLeft.filter(10);
@@ -91,21 +91,21 @@ void loop() {
   //  digitalWrite(LED_BUILTIN, LOW);
   //}
 
-  // Acima de 600 = preto! 
+  // Acima de 600 = preto!
 
    /*
   //------- Teste do Ultrassom ---------
-  
+
 
   //Teste o ultrassom com o Led Builtin
   //int ultrassom = usa.acende();
 
-  //Teste do Ultrassom 
+  //Teste do Ultrassom
   int ultrassom = ultraFront.filter(10);
   Serial.print(ultrassom);
   Serial.println("cm");
   delay(100);
-  
+
 
 
 	/*
@@ -117,13 +117,13 @@ void loop() {
   int filtragem = colorSensor.filter(10);
   Serial.println(filtragem);
 
-  
+
 
   motorLeft.rev(potBase);
   Serial.println(motorLeft.getCount());
   delay(100);
 
-  
+
 }
 
 */
@@ -153,6 +153,9 @@ unsigned long timeUpdate;
 unsigned long timeBegin2;
 unsigned long timeUpdate2;
 
+int encruzilhada = 0;
+int hanoi = 0;
+
 bool obstacle();
 
 MotorDC motorLeft (49, 51, 3, 18); //pinos
@@ -166,7 +169,7 @@ Ultrassom ultraFront (5, 4); //Ultrassom da parte frontal
 void inc (){
 
   motorLeft.encSignal();
-  
+
 }
 
 void incR (){
@@ -184,11 +187,11 @@ void followLine() {
 	Serial.println(esquerdo);
 	Serial.println(direito);
 	Serial.println(atras);
-	
+
 	timeBegin = millis();
 	while(esquerdo == 1 && direito == 1) {
 		timeUpdate = millis();
-		
+
 		Serial.println(motorLeft.getCount());
 		Serial.println("Direito 1 esquerdo 1");
 		//Serial.println(ldrLeft.filter(3));
@@ -227,7 +230,7 @@ void followLine() {
 							if((timeUpdate - timeBegin) > 1000) {
 								timeBegin = millis();
 							}
-						} 
+						}
 						else {
 							turnClockwise(potBase, &motorLeft, &motorRight);
 							flag = 1;
@@ -243,7 +246,7 @@ void followLine() {
 			break;
 		}
 		j = obstacle();
-		
+
 		esquerdo = ldrLeft.read(3);
 		direito = ldrRight.read(3);
 		atras = ldrBehind.read(3);
@@ -344,8 +347,262 @@ bool obstacle() {
 	return false; // não passou para a segunda parte ainda
 }
 
-int decodColor() {
-	return 2;
+void decodColor() {
+  int fitas = 0;
+  int filtragem = colorSensor.filter(10);
+  int leitura = colorSensor.color();
+  esquerdo = ldrLeft.read(3);
+	direito = ldrRight.read(3);
+
+  while (leitura != 0) { //leitura das fitas para saber qual decisão tomar
+    filtragem = colorSensor.filter(10);
+    leitura = colorSensor.color();
+    esquerdo = ldrLeft.read(3);
+  	direito = ldrRight.read(3);
+    stopAll(&motorLeft, &motorRight);
+    fitas++;
+    FowardCm(potBase,5,&motorLeft, &motorRight);   // anda até onde teria a proxima fita (atualmente ta 5cm, tem que ajustar)
+  }
+  followLine();
+
+  if(fitas != 0 && (esquerdo == 0 && direito == 0) { // se há uma leitura de fitas e os dois ldrs da frente são pretos, decide pra qual lado da encruzilhada ir
+    if (encruzilhada == 1) { //verifica se ja passou pela encruzilhada
+      towerHanoi();
+    }
+    if(fitas == 1) {
+      //vira p direita
+      stopAll(&motorLeft, &motorRight);
+      turnDegrees(potBase,90,HORARIO,&motorLeft, &motorRight);
+      encruzilhada = 1;
+      fitas = 0;
+      followLine();
+    }
+    else if(fitas == 2){
+      //vira p esquerda
+      stopAll(&motorLeft, &motorRight);
+      turnDegrees(potBase,90,HORARIO,&motorLeft, &motorRight);
+      encruzilhada = 1;
+      fitas = 0;
+      followLine();
+    }
+    else if(fitas == 3) {
+      //segue em frente
+      stopAll(&motorLeft, &motorRight);
+      FowardCm(potBase,5,&motorLeft, &motorRight);
+      encruzilhada = 1;
+      fitas = 0;
+      followLine();
+    }
+    else {
+      //error
+      Serial.println(fitas);
+      Serial.println("Não é pra entrar aqui");
+      fitas = 0;
+      encruzilhada = 0;
+      stopAll(&motorLeft, &motorRight);
+    }
+  }
+}
+
+void towerHanoi() {
+  /*
+                   1       1
+            1      2       2          1
+   --      --      --      --         --        --
+  |    -> |    -> |   -> 3|    ->  32|   -> 321|
+   --      --      --      --         --        --
+   1        2       3
+   2        3
+   3
+  */
+  esquerdo = ldrLeft.read(3);
+	direito = ldrRight.read(3);
+
+  if (hanoi == 1) { //verifica se ja passou pela torre de hanoi
+    visao();
+  }
+
+  if(esquerda == 0 && direita == 0) { //anda até ver preto com os sensores da frente pela primeira vez
+    stopAll(&motorLeft, &motorRight);
+
+    //vira 90 ANTIHORARIO
+    turnDegrees(potBase,90,ANTIHORARIO,&motorLeft, &motorRight);
+    //anda até ver preto com os sensores da frente pela primeira vez
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    stopAll(&motorLeft, &motorRight);
+    //pega o bloco
+
+    //vira 180
+    turnDegrees(potBase,180,ANTIHORARIO,&motorLeft, &motorRight);
+    //anda até ver preto com os sensores da frente pela segunda vez
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    stopAll(&motorLeft, &motorRight);
+    FowardCm(potBase,5,&motorLeft, &motorRight);
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    //deixa o bloco
+
+    //vira 180
+    turnDegrees(potBase,180,ANTIHORARIO,&motorLeft, &motorRight);
+    //anda até ver preto com os sensores da frente pela segunda vez
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    stopAll(&motorLeft, &motorRight);
+    FowardCm(potBase,5,&motorLeft, &motorRight);
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    //pega o bloco
+
+    //vira 180
+    turnDegrees(potBase,180,ANTIHORARIO,&motorLeft, &motorRight);
+    //anda até ver preto com os sensores da frente pela segunda vez
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    stopAll(&motorLeft, &motorRight);
+    FowardCm(potBase,5,&motorLeft, &motorRight);
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    //deixa o bloco
+
+    //vira 180
+    turnDegrees(potBase,180,ANTIHORARIO,&motorLeft, &motorRight);
+    //anda até ver preto com os sensores da frente pela segunda vez
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    stopAll(&motorLeft, &motorRight);
+    FowardCm(potBase,5,&motorLeft, &motorRight);
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    //pega o bloco
+
+    //vira 180
+    turnDegrees(potBase,180,ANTIHORARIO,&motorLeft, &motorRight);
+    //anda até ver preto com os sensores da frente pela primeira vez
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    stopAll(&motorLeft, &motorRight);
+    //vira 90 ANTIHORARIO
+    turnDegrees(potBase,90,ANTIHORARIO,&motorLeft, &motorRight);
+    //anda até ver preto com os sensores da frente pela primeira vez
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    //deixa o bloco
+
+    //vira 180
+    turnDegrees(potBase,180,ANTIHORARIO,&motorLeft, &motorRight);
+    //anda até ver preto com os sensores da frente pela primeira vez
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    //vira 90 ANTIHORARIO
+    turnDegrees(potBase,90,ANTIHORARIO,&motorLeft, &motorRight);
+    //anda até ver preto com os sensores da frente pela primeira vez
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    //pega o bloco
+
+    //vira 180
+    turnDegrees(potBase,180,ANTIHORARIO,&motorLeft, &motorRight);
+    //anda até ver preto com os sensores da frente pela primeira vez
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    //vira 90 HORARIO
+    turnDegrees(potBase,90,HORARIO,&motorLeft, &motorRight);
+    //anda até ver preto com os sensores da frente pela primeira vez
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    //deixa o bloco
+
+    //vira 180
+    turnDegrees(potBase,180,ANTIHORARIO,&motorLeft, &motorRight);
+    //anda até ver preto com os sensores da frente pela primeira vez
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    //vira 90 ANTIHORARIO
+    turnDegrees(potBase,90,ANTIHORARIO,&motorLeft, &motorRight);
+    //anda até ver preto com os sensores da frente pela primeira vez
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    //pega o bloco
+
+    //vira 180
+    turnDegrees(potBase,180,ANTIHORARIO,&motorLeft, &motorRight);
+    //anda até ver preto com os sensores da frente pela primeira vez
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    //vira 90 HORARIO
+    turnDegrees(potBase,90,HORARIO,&motorLeft, &motorRight);
+    //anda até ver preto com os sensores da frente pela primeira vez
+    while(esquerda != 0 && direita != 0) {
+      esquerdo = ldrLeft.read(3);
+    	direito = ldrRight.read(3);
+      followLine();
+    }
+    //deixa o bloco
+
+    hanoi = 1;
+
+  }
+
+}
+
+void visao() {
+
 }
 
 
@@ -374,4 +631,3 @@ void loop() {
 	followLine();
 	Serial.println("Resetou");
 }
-
