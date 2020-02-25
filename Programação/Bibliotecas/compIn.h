@@ -11,11 +11,14 @@
 
 
 
-void followLine();
+void followLine(int potencia, MotorDC *motorLeft, MotorDC *motorRight, Ultrassom *ultraFront);
+
+void decodColor();
 
 void obstacle();
 
 void vain();
+
 
 void grab();
 

@@ -5,9 +5,9 @@
 char state[32] = "segue_linha"; //Máquina de estados
 
 
-void followLine(){
+void followLine(int potencia, MotorDC *motorLeft, MotorDC *motorRight, Ultrassom *ultraFront) {
 
-	int front = ultraFront.filter(3);
+	int front = ultraFront->filter(3);
 
 	if(front < 29 && front != 0) {
 
@@ -20,38 +20,52 @@ void followLine(){
 }
 
 
- void obstacle(){
+void obstacle(int _power, MotorDC *_motorLeft, MotorDC *_motorRight, Ultrassom *_ultraFront){
+	/*Robô stop para fazer movimentação de desvio do obstáculo*/
+	stopAll(_motorLeft, _motorRight);
 
-		 int side = ultraSide.filter(3);
+	/*Movimentação de desvio do obstáculo*/ 
+	turnDegrees(_power,65,HORARIO, _motorLeft, _motorRight);
+	FowardCm(_power,4, _motorLeft, _motorRight);
+	turnDegrees(_power,70,ANTIHORARIO, _motorLeft, _motorRight);
+	FowardCm(_power,19, _motorLeft, _motorRight);
+	turnDegrees(_power,70,ANTIHORARIO, _motorLeft, _motorRight);
+	FowardCm(_power,4, _motorLeft, _motorRight);
+	turnDegrees(_power,65,HORARIO, _motorLeft, _motorRight);
+}
 
-	 	/*Robô stop para fazer movimentação de desvio do obstáculo*/
-	 	stopAll(&motorLeft, &motorRight);
 
-		/*Movimentação de desvio do obstáculo*/ 
-		turnDegrees(_power,65,HORARIO, &motorLeft, &motorRight);
-		FowardCm(_power,4, &motorLeft, &motorRight);
-		turnDegrees(_power,70,ANTIHORARIO, &motorLeft, &motorRight);
-		FowardCm(_power,19, &motorLeft, &motorRight);
-		turnDegrees(_power,70,ANTIHORARIO, &motorLeft, &motorRight);
-		FowardCm(_power,4, &motorLeft, &motorRight);
-		turnDegrees(_power,65,HORARIO, &motorLeft, &motorRight);
+void vain(Ultrassom _ultraSide, MotorDC *_motorRight, MotorDC *_motorLeft, bool *_foundWall, Ldr _infraLeft, Ldr _infraRight, int _bumperD, int _bumperE){
+	/*Função para passar pelo vão utilizando os bumpers*/
+	int sideDis = _ultraSide.filter(4);
 
-		/*Começar a verificar se tem vão ou não*/
-		if (side > 10 /*mais alguma coisa*/ ){
-			followLine(); //Conferir se quando ele estiver virando e olhar para a parede será menor que 29.
-		}else{
-			sprintf(state, "lacuna");
+	if(sideDis < 250 && (*_foundWall) == false) {
+		*_foundWall = true;
+	} 
+	if(*_foundWall and sideDis > 400) {
+		FowardCm(37, 5, _motorLeft, _motorRight);
+		turnDegrees(37, 90, HORARIO, _motorLeft, _motorRight);
+		moveAll(37, _motorLeft, _motorRight);
+		while(_infraLeft.read(4) || _infraRight.read(4)) {
+			if(digitalRead(_bumperD) == LOW){
+				//Substituir as referências do bumper por nomes, funções e classes reais.
+				turnDegrees(37, 15, HORARIO, _motorLeft, _motorRight);
+				RevCm(37, 7, _motorLeft, _motorRight);
+				turnDegrees(37, 15, ANTIHORARIO, _motorLeft, _motorRight);
+				moveAll(37, _motorLeft, _motorRight);
+			}
+			if(digitalRead(_bumperE) == LOW){
+				//Substituir as referências do bumper por nomes, funções e classes reais.
+				turnDegrees(37, 15, ANTIHORARIO, _motorLeft, _motorRight);
+				RevCm(37, 7, _motorLeft, _motorRight);
+				turnDegrees(37, 15, HORARIO, _motorLeft, _motorRight);
+				moveAll(37, _motorLeft, _motorRight);
+			}
 		}
-
- }
-
-
- void vain(){
-
-	 /*Função para passar pelo vão utilizando os bumpers*/
-	 /*Quando achar os blocos, ou seja, o ultrassom da frente os ver mudar de state para GRAB*/
-
- }
+		stopAll(_motorLeft, _motorRight);
+		//Passar para segunda parte do desafio
+	}
+}
 
 
 

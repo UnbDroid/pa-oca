@@ -17,6 +17,7 @@ public:
 
     //Método de filtragem.
     int filter(int count);
+    int pinOut;
 
 private:
 
@@ -24,7 +25,7 @@ private:
     int pinS1;
     int pinS2;
     int pinS3;
-    int pinOut;
+
     
 
 };
