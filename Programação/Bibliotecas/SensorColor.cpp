@@ -18,7 +18,7 @@ SensorColor::SensorColor(int pinS0, int pinS1, int pinS2, int pinS3, int pinOut)
 
 		digitalWrite(pinS0, HIGH);
 		digitalWrite(pinS1, LOW);
-		
+
 }
 
 SensorColor::~SensorColor()
@@ -34,14 +34,14 @@ int SensorColor::color(){
 	int blue = 0;
 
 	//Rotina que le o valor das cores
-	
+
 	//Ler Vermelho:
 	digitalWrite(pinS2, LOW);
 	digitalWrite(pinS3, LOW);
 	//count OUT, pred, red
 	red = pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH);
 	//Serial.println(red);
-	
+
 	//Ler Azul:
 	digitalWrite(pinS3, HIGH);
 	//count OUT, pblue, blue
@@ -54,7 +54,7 @@ int SensorColor::color(){
 	green = pulseIn(pinOut, digitalRead(pinOut) == HIGH ? LOW : HIGH);
 	//Serial.println(green);
 
-/*	//Verifica se a cor vermelha foi detectada
+	//Verifica se a cor vermelha foi detectada
 	if (red < blue && red < green && red < 160 && blue > 90)
 	{
 		return COLOR_RED;
@@ -65,24 +65,28 @@ int SensorColor::color(){
 	{
 		return COLOR_BLUE;
 	}
- 
+
 	//Verifica se a cor verde foi detectada
 	else if (green < red && blue < red && blue > 70)
 	{
 		return COLOR_GREEN;
-	} else{
+	}
+	else if (green < 40 && blue < 40 && red < 40 ) {
+		return COLOR_WHITE;
+	}
+	else{
 		return 0; //Caso não detecte nada, retorna-se zero.
 	}
-	*/
 
-	if(red < 85 && blue < 80 && green < 85) {
-		return 0;
-	} 
-	else if((red < 120 and red > 80) and (blue < 100 and blue > 70) and (green < 120 and green > 83)) {
-		return 0;
-	} else {
-		return 1;
-	}
+
+	// if(red < 85 && blue < 80 && green < 85) {
+	// 	return 0;
+	// }
+	// else if((red < 120 and red > 80) and (blue < 100 and blue > 70) and (green < 120 and green > 83)) {
+	// 	return 0;
+	// } else {
+	// 	return 1;
+	// }
 
 }
 
@@ -108,8 +112,3 @@ int SensorColor::color(){
 
 		return -1;
 	}
-
-
- 
-
-
