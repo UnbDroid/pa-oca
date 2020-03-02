@@ -6,11 +6,11 @@
 class Grab
 {
 public:
-    Grab(int pinRead, int ang);
+    Grab(int pinRead);
     ~Grab();
 
-    void grabOpen();
-    void grabClose();
+    void grabOpen(int ang);
+    void grabClose(int ang);
 
     Servo *grab;
 
@@ -18,8 +18,7 @@ public:
 private:
 
     int pinRead;
-    int ang;
-    
+        
 };
 
 

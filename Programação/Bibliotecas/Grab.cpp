@@ -3,11 +3,11 @@
 
 
 //Função Construtor
-Grab::Grab(int pinRead, int ang)
+Grab::Grab(int pinRead)
 {
     //Setando os atributos da classe com os valores passado pela função.
     this->pinRead = pinRead;
-    this->ang = ang;
+    
 
     //Setando os pinos com INPUT.
     //pinMode(pinRead, INPUT);
@@ -25,7 +25,7 @@ Grab::~Grab()
 
 //Método para abrir as garras
 
-void Grab::grabOpen(){
+void Grab::grabOpen(int ang){
 
     int pos;
 
@@ -36,7 +36,7 @@ void Grab::grabOpen(){
 
 }
 
-void Grab::grabClose(){
+void Grab::grabClose(int ang){
 
     int pos;
 
