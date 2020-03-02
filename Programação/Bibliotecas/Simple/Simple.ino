@@ -29,6 +29,11 @@ void setup() {
 }
 
 void loop() {
+  while(true){
+    Serial.println(analogRead(A6))
+
+  }
+  
   if(analogRead(A6) > 200 && analogRead(A3) > 200) {
     rev(40, 48, 49, 3);
     rev(40, 46, 51, 7);
