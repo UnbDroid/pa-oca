@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Move.h>
+#include <math.h>
 
 #define kp 0.05
 #define ki 0.001
@@ -9,7 +10,7 @@ float time1 = millis();
 //Função que move as duas rodas para a frente.
 void moveAll(int _power, MotorDC *motorLeft, MotorDC *motorRight) {
   motorLeft->fwd(_power);
-  motorRight->fwd(_power);  
+  motorRight->fwd(_power);
 }
 
 
@@ -32,7 +33,7 @@ void moveAllpid(int _power, MotorDC *motorLeft, MotorDC *motorRight, float *soma
   //Serial.print("EncodR:");
   //Serial.println(motorRight->getCount());
   //Serial.println(mRight);
-  
+
 
   deltaT = (error[1] - lastT)/1000;
 //  deltaE = abs(error[0] - lastError);
@@ -42,7 +43,7 @@ void moveAllpid(int _power, MotorDC *motorLeft, MotorDC *motorRight, float *soma
   //Serial.print("Erro :");
   //Serial.println(error[0]);
 
-  *soma = (*soma)*0.6 + error[0]*deltaT; 
+  *soma = (*soma)*0.6 + error[0]*deltaT;
 
   if((*soma)*ki > 10){
     *soma = 10/ki;
@@ -62,7 +63,7 @@ void moveAllpid(int _power, MotorDC *motorLeft, MotorDC *motorRight, float *soma
   motorLeft->fwd(powerLeft);
   motorRight->fwd(powerRight);
 
-  
+
   if(_power < 0){
 
     if((error[1] - time1) > 3500){
@@ -73,7 +74,7 @@ void moveAllpid(int _power, MotorDC *motorLeft, MotorDC *motorRight, float *soma
       motorRight->rev(50);
     }
 
-  }else{  
+  }else{
     if((error[1] - time1) > 3500){
       motorLeft->fwd(powerLeft);
       motorRight->fwd(powerRight);
@@ -82,7 +83,7 @@ void moveAllpid(int _power, MotorDC *motorLeft, MotorDC *motorRight, float *soma
       motorRight->fwd(50);
     }
   }
-  
+
 
   ////Serial.print("error:");
   ////Serial.println()
@@ -93,7 +94,7 @@ void moveAllpid(int _power, MotorDC *motorLeft, MotorDC *motorRight, float *soma
   ////Serial.print("Soma:");
   ////Serial.println((*soma));
 
-  
+
 
 
   //delay(80);
@@ -104,7 +105,7 @@ void moveAllpid(int _power, MotorDC *motorLeft, MotorDC *motorRight, float *soma
 //Função que move as duas rodas para trás.
 void moveRevAll(int _power, MotorDC *motorLeft, MotorDC *motorRight) {
   motorLeft->rev(_power);
-  motorRight->rev(_power); 
+  motorRight->rev(_power);
 }
 
 
@@ -144,23 +145,23 @@ void turnDegrees(int _power, int _degree, int _clock, MotorDC *motorLeft, MotorD
   int countRightUpdate = motorRight->getCount();
 
   if (_clock == HORARIO) {
-    motorRight->stop();
     motorLeft->fwd(_power);
+    motorRight->rev(_power);
     while((countLeftUpdate - countLeftInitial) < move ) {
       countLeftUpdate = motorLeft->getCount();
-      //Serial.println("Counter L deg");
-      //Serial.println(countLeftUpdate);
+      Serial.println("Counter L deg");
+      Serial.println(countLeftUpdate);
     }
     stopAll(motorLeft, motorRight);
   }
 
   else if (_clock == ANTIHORARIO) {
-    motorLeft->stop();
     motorRight->fwd(_power);
+    motorLeft->rev(_power);
     while((countRightUpdate - countRightInitial) < move) {
       countRightUpdate = motorRight->getCount();
-      //Serial.println("Counter R");
-      //Serial.println(countRightUpdate);
+      Serial.println("Counter R");
+      Serial.println(countRightUpdate);
     }
     stopAll(motorLeft, motorRight);
   }

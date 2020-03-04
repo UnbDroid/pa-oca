@@ -11,7 +11,7 @@
 #define STATE_TURN_RIGHT 1 // VIRANDO
 #define STATE_TURN_LEFT 2
 #define STATE_REV 3 //RÉ
-#define potBase 40
+#define potBase 30
 
 #define BumperE 38
 #define BumperD 36
@@ -47,9 +47,9 @@ float mL;
 //Máquina de estado (Flag)
 char state = STATE_FWD;
 
-//Torre de Hanoi
+//Decodificação de cor
 int encruzilhada = 0;
-int hanoi = 0;
+int fitas = 0;
 
 
 int red = 0;
@@ -88,11 +88,13 @@ void setup () {
 	pinMode(colorSensor.pinOut, INPUT);
 }
 
+
+
 void loop () {
 
-  //int filtragem = colorSensor.filter(10);
-  //Serial.println(filtragem);
-  //delay(1000);
+//   int filtragem = colorSensor.color();
+//   Serial.println(filtragem);
+//   delay(500);
 
   //Serial.println(infraLeft.filter(5));
 
@@ -103,106 +105,72 @@ void loop () {
 
 
 void decodColor() {
-  int fitas = 0;
-  int filtragem = colorSensor.filter(5);
-  int leitura = colorSensor.color();
+  int leitura = colorSensor.filter(3);
   int esquerdo = infraLeft.read(3);
   int direito = infraRight.read(3);
-  int encodIni, encodUpd, flag, cor[2];
 
-  if(esquerdo < 700 && esquerdo > 400) { // tem que adaptar os valores pro que ele le no colorido 
-    // infra leu colorido
-    int colorido = 1;
-  }
-  else {
-    colorido = 0;
-  }
+if (encruzilhada == 1) { // verifica se ja passou pela encruzilhada
+	followLine();
+}
 
-  for(int i=0; i<2; i++) {
-    cor[i] = leitura; // indice 0 -> valor anterior | indice 1 -> atual
-    leitura = colorSensor.color();
-  }
+while (esquerdo != 0 && direito != 0) { // busca fitas enquanto não vê preto com os infras da frente
+	if(leitura == 1) {
 
-if((cor[1] != 0) && (cor[1] != 4)) {
-  cor[2] = leitura;
-  if((cor[0] == 4) && (cor[1] != 0) && (cor[2] == 4)) {
-    //segue o baile : branco -> colorido -> branco
-  }
-
-  if((cor[0] == 4) && (cor[1] != 0) && (cor[2] == 0) && (infra[1] > 700) {
-    // branco -> colorido -> preto
-    if (colorido == 0) {
-      // infra nao viu colorido antes
-      return;
-    }
-  }
-
-  encodIni = motorLeft.getCount();
-  encodUpd = motorLeft.getCount();
-  flag = 0;
-    while((encodUpd - encodIni) < 200) { //leitura das fitas para saber qual decisão tomar
-      if(flag == 1 && (encodUpd - encodIni) > 40) {
-        encodIni = motorLeft.getCount();
-        flag = 0;
-        fitas++;
-      }
-      else if(flag == 1) {
-        flag = 0;
-        encodIni = motorLeft.getCount();
-      }
-      encodUpd = motorLeft.getCount();
-      //Serial.println(encodUpd - encodIni);
-      filtragem = colorSensor.filter(5);
-      leitura = colorSensor.color();
-      while((leitura != 0) && (leitura != 4)) {
-        encodUpd = motorLeft.getCount();
-        //Serial.println("PORQUE");
-        filtragem = colorSensor.filter(5);
-        leitura = colorSensor.color();
-        flag = 1;
-      }
-    }
-  }
-  //Serial.println("Aqui agora");
-  //Serial.println(fitas);
-
-  esquerdo = infraLeft.read(3);
-  direito = infraRight.read(3);
-
-  //followLine();
-  if(fitas != 0 && (esquerdo == 0 && direito == 0)) { // se há uma leitura de fitas e os dois ldrs da frente são pretos, decide pra qual lado da encruzilhada ir
-	if (encruzilhada == 1) { //verifica se ja passou pela encruzilhada
-	  towerHanoi();
+		fitas++;
+		stopAll(&motorLeft, &motorRight);
+		FowardCm(potBase,3, &motorLeft, &motorRight);
 	}
+	else {
+		followLine();
+	}
+
+	leitura = colorSensor.filter(3);
+	esquerdo = infraLeft.read(3);
+ 	direito = infraRight.read(3);
+
+}
+
+  if(fitas != 0) { // se há uma leitura de fitas e os dois ldrs da frente são pretos, decide pra qual lado da encruzilhada ir
 	if(fitas == 1) {
 	  //vira p direita
+	  Serial.println("virando pra direita");
 	  stopAll(&motorLeft, &motorRight);
-	  turnDegrees(potBase,100,HORARIO,&motorLeft, &motorRight);
-	  encruzilhada = 1;
+ 	  turnDegrees(40,60,HORARIO,&motorLeft, &motorRight);
 	  fitas = 0;
-	  //followLine();
+	  encruzilhada = 1;
+	  while (esquerdo != 0 && direito != 0){ // enquanto não vê preto com os dois da frente segue linha (isso é pra saida da encruzilhada)
+		followLine();
+	  }
+	  turnDegrees(40,60,HORARIO,&motorLeft, &motorRight);
 	}
 	else if(fitas == 2){
 	  //vira p esquerda
+	  Serial.println("virando pra esquerda");
 	  stopAll(&motorLeft, &motorRight);
-	  turnDegrees(potBase,90,HORARIO,&motorLeft, &motorRight);
-	  encruzilhada = 1;
+	  turnDegrees(40,70,ANTIHORARIO,&motorLeft, &motorRight);
 	  fitas = 0;
-	  //followLine();
+	  encruzilhada =1;
+	   while (esquerdo != 0 && direito != 0){ // enquanto não vê preto com os dois da frente segue linha (isso é pra saida da encruzilhada)
+		followLine();
+	  }
+	  turnDegrees(40,70,ANTIHORARIO,&motorLeft, &motorRight);
 	}
 	else if(fitas == 3) {
 	  //segue em frente
+	  Serial.println("em frente");
 	  stopAll(&motorLeft, &motorRight);
 	  FowardCm(potBase,5,&motorLeft, &motorRight);
-	  encruzilhada = 1;
 	  fitas = 0;
-	  //followLine();
+	  encruzilhada =1;
+	  while (esquerdo != 0 && direito != 0){ // enquanto não vê preto com os dois da frente segue linha (isso é pra saida da encruzilhada)
+		followLine();
+	  }
+	  FowardCm(potBase,5,&motorLeft, &motorRight);
 	} else {
 	  //error
 	  Serial.println(fitas);
 	  Serial.println("Não é pra entrar aqui");
 	  fitas = 0;
-	  encruzilhada = 0;
 	  stopAll(&motorLeft, &motorRight);
 	}
   }
@@ -218,6 +186,7 @@ void followLine(){
 
 	 //Vendo os dois preto
 		if (analogRead(A6) > 700 && analogRead(A3) > 700){
+
       /*
       Serial.println("SADASA");
 
