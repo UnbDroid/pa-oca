@@ -8,12 +8,29 @@ class Grab
 {
 public:
 
-    //Declaração do construtor e desconstrutor
+    /* Grab
+      Descricao: Construtor da Classe.
+      Parâmetros:
+        - pinRead: Pino digital que o Servo está conectado. 
+    */
     Grab(int pinRead);
+
+    //Desconstrudor
     ~Grab();
 
-    //Declaração do métodos abrir e fechar garra
+    
+    /* grabOpen
+      Descricao: Abre a garra.
+      Parâmetros:
+        - ang: angulo de abertura desejado.
+    */
     void grabOpen(int ang);
+
+    /* grabClose
+      Descricao: Fecha a garra.
+      Parâmetros:
+        - ang: angulo de fechamento desejado.
+    */
     void grabClose(int ang);
 
     //Declaração do objeto servo.

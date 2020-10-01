@@ -29,6 +29,7 @@ MotorDC::~MotorDC(){}
 //Função que anda para frente.
 void MotorDC::fwd(int pot){
 
+    //Sentido de rotação do motor
     dir = 1;
 
     digitalWrite(pinA, HIGH);

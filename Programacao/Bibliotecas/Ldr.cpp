@@ -1,7 +1,9 @@
 #include <Arduino.h>
 #include <Ldr.h>
 
-//Função Construtor
+/*Classe criada para leituras dos LDR's*/
+
+//Função construtor
 Ldr::Ldr(int pinRead, int threshold)
 {
     //Setando os atributos da classe com os valores passado pela função.
@@ -31,7 +33,7 @@ int Ldr::filter(int count){
     return (soma)/count;
 }
 
-//Função que identifica preto e branco
+//Função que identifica se o LDR está lendo preto e branco
 bool Ldr::read(int count){
 
     //Variável que irá conter o valor filtrado.
