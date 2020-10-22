@@ -8,36 +8,42 @@ class SensorColor
 {
 public:
 
-    //Construtor e Destrutor da classe SensorColor.
+     /* SensorColor
+      Descricao: Construtor da Classe.
+      Parâmetros:
+        - pinS0, pinS1, pinS2, pinS3, pinOut: Pinos digitais que o sensor de cor está conectado. 
+    */
     SensorColor(int pinS0, int pinS1, int pinS2, int pinS3, int pinOut);
+
+    // Desconstrutor
     ~SensorColor();
 
-    //Método que detecta a cor.
+    
+     /* color
+      Descricao: Método que detecta a cor que o sensor está vendo.
+      Parâmetros:
+        - pinS0, pinS1, pinS2, pinS3, pinOut: Pinos digitais que o sensor de cor está conectado. 
+    */
     int color();
 
-    //Método de filtragem.
+    /* filter
+      Descricao: Função que retorna um valor de filtragem.
+      Parâmetros:
+        - count: Quantidade de valores da amostra que será filtrado.
+        
+    */
     int filter(int count);
-    int pinOut;
+    
 
 private:
 
+// Declaração de variáveis
     int pinS0;
     int pinS1;
     int pinS2;
     int pinS3;
-
-    
+    int pinOut;   
 
 };
-
-
-
-
-
-
-
-
-
-
 
 #endif

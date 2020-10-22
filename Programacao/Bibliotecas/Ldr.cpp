@@ -10,7 +10,7 @@ Ldr::Ldr(int pinRead, int threshold)
     this->pinRead = pinRead;
     this->threshold = threshold;
 
-    //Setando os pinos com INPUT.
+    //Setando os pinos com INPUT, ou seja, irá perceber o "meio ambiente" e mandar o dado pro Arduino.
     pinMode(pinRead, INPUT);
 }
 

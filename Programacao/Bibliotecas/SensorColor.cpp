@@ -4,6 +4,7 @@
 
 SensorColor::SensorColor(int pinS0, int pinS1, int pinS2, int pinS3, int pinOut)
 {
+		//Setando os atributos da classe com os valores passado pela função.
 		this->pinOut = pinOut;
 		this->pinS0 = pinS0;
 		this->pinS1 = pinS1;

@@ -52,6 +52,6 @@ void Grab::grabClose(int ang){
     for(pos = ang; pos>=1; pos-=1)    {  
     grab->write(pos);                       
     delay(15);                       
-  } 
+    } 
 
 }

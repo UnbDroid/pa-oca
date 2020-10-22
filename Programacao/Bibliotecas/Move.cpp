@@ -18,30 +18,18 @@ void moveAll(int _power, MotorDC *motorLeft, MotorDC *motorRight) {
 void moveAllpid(int _power, MotorDC *motorLeft, MotorDC *motorRight, float *soma, float *error, float giro) {
   float powerLeft;
   float powerRight;
-//  float lastError = error[0];
+
   float lastT = error[1];
   float deltaT;
-//  float deltaE;
+
 
   float mLeft = motorLeft->getCount();
   float mRight = motorRight->getCount();
   error[0] = (mLeft - mRight) - giro; // diferença entre os encoderes sendo o error atual
   error[1] = millis();
-  //Serial.print("EncodL:");
-  //Serial.println(motorLeft->getCount());
-  //Serial.println(mLeft);
-  //Serial.print("EncodR:");
-  //Serial.println(motorRight->getCount());
-  //Serial.println(mRight);
 
 
   deltaT = (error[1] - lastT)/1000;
-//  deltaE = abs(error[0] - lastError);
-
-  //Serial.print("Delta :");
-  //Serial.println(deltaT);
-  //Serial.print("Erro :");
-  //Serial.println(error[0]);
 
   *soma = (*soma)*0.6 + error[0]*deltaT;
 
@@ -55,15 +43,10 @@ void moveAllpid(int _power, MotorDC *motorLeft, MotorDC *motorRight, float *soma
   powerLeft = abs(_power);
   powerRight = abs(_power) + (error[0]*kp) + (*soma)*ki;
 
-  //Serial.print("Pot :");
-  //Serial.println(powerRight);
-  //Serial.print("Soma :");
-  //Serial.println(*soma);
-
   motorLeft->fwd(powerLeft);
   motorRight->fwd(powerRight);
 
-
+  //Quando a potência era negativa, adotamos que o robô andaria para trás
   if(_power < 0){
 
     if((error[1] - time1) > 3500){
@@ -83,22 +66,6 @@ void moveAllpid(int _power, MotorDC *motorLeft, MotorDC *motorRight, float *soma
       motorRight->fwd(50);
     }
   }
-
-
-  ////Serial.print("error:");
-  ////Serial.println()
-  ////Serial.print("potLeft");
-  ////Serial.println(potLeft);
-  ////Serial.print("potRight");
-  ////Serial.println(potRight);
-  ////Serial.print("Soma:");
-  ////Serial.println((*soma));
-
-
-
-
-  //delay(80);
-  //stopAll(motorLeft,motorRight);
 }
 
 
@@ -138,20 +105,26 @@ void turnAnticlockwise(int _power,  MotorDC *motorLeft, MotorDC *motorRight) {
 //dir = HORARIO ou ANTIHORARIO
 void turnDegrees(int _power, int _degree, int _clock, MotorDC *motorLeft, MotorDC *motorRight) {
   int c = DIAMETER*3.14;
+  //Perimetro que a roda deve andar para chegar na quantidade de graus desejada
   int move = (GIRO*(WDIST*3.14*2)*((float) _degree/360))/c;
+
+  //Variáveis que armazenam as contagens dos encoderes
   int countLeftInitial = motorLeft->getCount();
   int countLeftUpdate = motorLeft->getCount();
   int countRightInitial = motorRight->getCount();
   int countRightUpdate = motorRight->getCount();
 
+  //Girar sentido horário
   if (_clock == HORARIO) {
     motorLeft->fwd(_power);
     motorRight->rev(_power);
+    //Enquanto distância entre o enconder atual e o inicial não for o desejado (MOVE) ele vai continuar girando.
     while((countLeftUpdate - countLeftInitial) < move ) {
       countLeftUpdate = motorLeft->getCount();
       Serial.println("Counter L deg");
       Serial.println(countLeftUpdate);
     }
+    //Quando a distância do enconder atual e o inicial for igual o desejado (MOVE), o robô tem que parar de girar.
     stopAll(motorLeft, motorRight);
   }
 
@@ -181,13 +154,10 @@ void FowardCm(int _power, int _distance, MotorDC *motorLeft, MotorDC *motorRight
 
   moveAll(_power, motorLeft, motorRight);
 
+//Enquanto distância entre o enconder atual e o inicial não for o desejado (MOVE) ele vai continuar andando pra frente.
   while((countLeftUpdate - countLeftInitial) < move ) {
     moveAll(_power, motorLeft, motorRight);
     countLeftUpdate = motorLeft->getCount();
-    ////Serial.println("Counter L fwd");
-    ////Serial.println(countLeftUpdate);
-    ////Serial.println(andar);
-    ////Serial.println(countLeftInitial);
   }
 
   stopAll(motorLeft, motorRight);
